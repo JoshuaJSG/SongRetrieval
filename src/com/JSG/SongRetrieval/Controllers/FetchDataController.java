@@ -14,11 +14,20 @@ import java.util.List;
 
 public class FetchDataController {
 
-        private List<String> albums = new ArrayList<>();
-//    private String spotifyURL = "https://api.spotify.com/v1/artists/0OdUWJ0sBjDrqHygGUXeCF/top-tracks";
-//    private String clientID = "e7a2280645cf4fdbb762a4139c7ae8e1";
-//    private String clientSecretID = "f57b9e632d124e97a9b25b751c185dc5";
-//    private String personalID = "BQAYSaDCrGB5zVx2dZsVia6IlMTnK6PggVBQ72GBGcs0yalve5hTfXrOjNyt4uCBTP6x3Um7edoI_FCeh7pQPbq2pbDNPBif2LjYgdRGK59Piq8oKQ8BCUgivllAiKQGpqLMQWsqMhaEDISq-if3Z3QrtBhwL1okk88";
+    private List<String> albums = new ArrayList<>();
+    private String entity = "&entity=album";
+    public String baseUrl = "https://itunes.apple.com/lookup?";
+
+
+    //example https://itunes.apple.com/lookup?id=909253&entity=album
+
+
+    public String searchArtistbyName(int id){
+        String newUrl = baseUrl+"id="+id+entity;
+
+        return newUrl;
+    }
+
 
 
     public String fetchUrl(String urlString) throws Exception{
@@ -32,10 +41,10 @@ public class FetchDataController {
             result.append(line);
         }
         rd.close();
-        System.out.println();
         parseJSON(result.toString());
         return result.toString();
     }
+
 
 
     private void parseJSON(String httpResponse){
@@ -53,8 +62,6 @@ public class FetchDataController {
         loopList(albums);
 
     }
-
-
 
     private void loopList(List<String> albums){
         for (String album : albums) {
