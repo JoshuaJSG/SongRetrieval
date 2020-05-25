@@ -12,25 +12,17 @@ import java.net.URL;
 
 public class FetchDataController {
 
-
-    private String URLString = "https://api.deezer.com/album/";
-    private int id = 302127;
-
-
-    public void fetchUrlWithId(int id)  {
-        String newUrl = URLString+id;
-        try {
-            fetchUrl(newUrl);
-        } catch (Exception e){
-            System.out.println("Could not load url due to uncaught exception "
-                    +e.getMessage());
-        }
+    /* https://developer.spotify.com/documentation/web-api/reference/artists/get-artists-top-tracks/
+    * https://api.spotify.com/v1/artists/{id}/top-tracks
+    *
+    * */
+    private String spotifyURL = "https://api.spotify.com/v1/artists/0OdUWJ0sBjDrqHygGUXeCF/top-tracks";
+    private String clientID = "e7a2280645cf4fdbb762a4139c7ae8e1";
+    private String clientSecretID = "f57b9e632d124e97a9b25b751c185dc5";
+    private String personalID = "BQAYSaDCrGB5zVx2dZsVia6IlMTnK6PggVBQ72GBGcs0yalve5hTfXrOjNyt4uCBTP6x3Um7edoI_FCeh7pQPbq2pbDNPBif2LjYgdRGK59Piq8oKQ8BCUgivllAiKQGpqLMQWsqMhaEDISq-if3Z3QrtBhwL1okk88";
 
 
-    }
-
-
-    private String fetchUrl(String urlString) throws Exception{
+    public String fetchUrl(String urlString) throws Exception{
         StringBuilder result = new StringBuilder();
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -41,23 +33,18 @@ public class FetchDataController {
             result.append(line);
         }
         rd.close();
-        System.out.println(result.toString());
         System.out.println();
         parseJSON(result.toString());
         return result.toString();
     }
 
 
-
-
     private void parseJSON(String httpResponse){
         String jsonString = httpResponse.toString();
         JSONObject obj = new JSONObject(jsonString);
-        int id = obj.getInt("id");
-        System.out.println(id);
-        JSONArray contributorsArray = obj.getJSONArray("contributors");
+        JSONArray contributorsArray = obj.getJSONArray("results");
         for (int i = 0; i < contributorsArray.length(); i++) {
-            String name = contributorsArray.getJSONObject(i).getString("name");
+            String name = contributorsArray.getJSONObject(i).getString("artistName");
             System.out.println(name);
         }
     }
