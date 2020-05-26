@@ -18,28 +18,22 @@ public class FetchDataController {
     private List<String> songs = new ArrayList<>();
     public String baseUrl = "https://itunes.apple.com/search?term=";
 
-    //https://itunes.apple.com/search?term=Headie+One
-
-    //example https://itunes.apple.com/lookup?id=909253&entity=album
-
 
     public String searchArtistbyName(String artistName){
         String usedArtistName = "";
         List<String> namesArrayWithPlus = new ArrayList<>();
         String[] splitArtistNameArray = artistName.split(" ");
 
-
-
         if (splitArtistNameArray.length==1){
             usedArtistName = artistName;
         } else {
-            for (int i = 0; i <splitArtistNameArray.length; i++) {
-                String namesWithPlus = splitArtistNameArray[i] +"+";
+            for (int i = 0; i <splitArtistNameArray.length-1; i++) {
+                String namesWithPlus = splitArtistNameArray[i] +"+"+splitArtistNameArray[splitArtistNameArray.length-1];
                 namesArrayWithPlus.add(namesWithPlus);
             }
             usedArtistName = getItemsFromList(namesArrayWithPlus);
         }
-        
+
         String newUrl = baseUrl+usedArtistName;
         System.out.println(newUrl);
         try {
@@ -89,13 +83,14 @@ public class FetchDataController {
         for (int i = 0; i < contributorsArray.length()-1; i++) {
             name = contributorsArray.getJSONObject(0).getString("artistName");
             trackName = contributorsArray.getJSONObject(i).getString("trackName");
-            albumName = contributorsArray.getJSONObject(i+1).getString("collectionName");
+//            albumName = contributorsArray.getJSONObject(i+1).getString("collectionName");
             albums.add(albumName);
             songs.add(trackName);
         }
         System.out.println("Artist: "+name+ "\nSongs:");
         System.out.println();
         loopList(songs);
+
 
     }
 
