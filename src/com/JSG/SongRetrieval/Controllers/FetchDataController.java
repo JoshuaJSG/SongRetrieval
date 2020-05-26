@@ -15,22 +15,54 @@ import java.util.List;
 public class FetchDataController {
 
     private List<String> albums = new ArrayList<>();
-    private String entity = "&entity=album";
-    public String baseUrl = "https://itunes.apple.com/lookup?";
+    private List<String> songs = new ArrayList<>();
+    public String baseUrl = "https://itunes.apple.com/search?term=";
 
+    //https://itunes.apple.com/search?term=Headie+One
 
     //example https://itunes.apple.com/lookup?id=909253&entity=album
 
 
-    public String searchArtistbyName(int id){
-        String newUrl = baseUrl+"id="+id+entity;
+    public String searchArtistbyName(String artistName){
+        String usedArtistName = "";
+        List<String> namesArrayWithPlus = new ArrayList<>();
+        String[] splitArtistNameArray = artistName.split(" ");
 
+
+
+        if (splitArtistNameArray.length==1){
+            usedArtistName = artistName;
+        } else {
+            for (int i = 0; i <splitArtistNameArray.length; i++) {
+                String namesWithPlus = splitArtistNameArray[i] +"+";
+                namesArrayWithPlus.add(namesWithPlus);
+            }
+            usedArtistName = getItemsFromList(namesArrayWithPlus);
+        }
+        
+        String newUrl = baseUrl+usedArtistName;
+        System.out.println(newUrl);
+        try {
+            fetchUrl(newUrl);
+        } catch (Exception e) {
+            System.out.println("Error making request to URL: " +newUrl+"\n"+ e.getLocalizedMessage());
+            e.printStackTrace();
+        }
         return newUrl;
     }
 
 
 
-    public String fetchUrl(String urlString) throws Exception{
+    private String getItemsFromList(List<String> array){
+        String names = "";
+        for (String name : array) {
+            names+=name;
+        }
+        return names;
+    }
+
+
+    private String fetchUrl(String urlString) throws Exception{
         StringBuilder result = new StringBuilder();
         URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -50,16 +82,20 @@ public class FetchDataController {
     private void parseJSON(String httpResponse){
         String name = "";
         String albumName = "";
+        String trackName = "";
         String jsonString = httpResponse.toString();
         JSONObject obj = new JSONObject(jsonString);
         JSONArray contributorsArray = obj.getJSONArray("results");
         for (int i = 0; i < contributorsArray.length()-1; i++) {
             name = contributorsArray.getJSONObject(0).getString("artistName");
+            trackName = contributorsArray.getJSONObject(i).getString("trackName");
             albumName = contributorsArray.getJSONObject(i+1).getString("collectionName");
             albums.add(albumName);
+            songs.add(trackName);
         }
-        System.out.println("Albums for "+ name + " are:");
-        loopList(albums);
+        System.out.println("Artist: "+name+ "\nSongs:");
+        System.out.println();
+        loopList(songs);
 
     }
 
@@ -68,5 +104,6 @@ public class FetchDataController {
             System.out.println(album);
         }
     }
+
 
 }
